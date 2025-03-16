@@ -8,23 +8,11 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// ✅ Enable CORS globally
-app.use(cors({
-    origin: '*' // ✅ Allow all origins
-}));
-
-
-// app.use((req, res, next) => {
-//     res.setHeader('Access-Control-Allow-Origin', '*'); // ✅ Allow all origins
-// });
-
-// ✅ Middleware
+// ✅ Enable CORS (Allow requests from frontend)
+app.use(cors({ origin: "*" })); 
 app.use(express.json()); // Parse JSON requests
 
-// ✅ Handle CORS Preflight Requests
-app.options('*', cors());
-
-// ✅ Serve Frontend Static Files (If using Vercel)
+// ✅ Serve Frontend Static Files
 app.use(express.static(path.join(__dirname, '../frontend/public')));
 
 // ✅ MongoDB Connection
@@ -40,27 +28,28 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // ✅ Define Schema & Model
 const restaurantSchema = new mongoose.Schema({
-    restaurant_id: { type: Number, required: true },
-    name: { type: String, required: true },
-    country_code: { type: Number },
-    city: { type: String },
-    address: { type: String },
-    locality: { type: String },
-    locality_verbose: { type: String },
-    longitude: { type: Number },
-    latitude: { type: Number },
-    cuisines: { type: String },
-    average_cost_for_two: { type: Number },
-    currency: { type: String },
-    has_table_booking: { type: Boolean },
-    has_online_delivery: { type: Boolean },
-    is_delivering_now: { type: Boolean },
-    switch_to_order_menu: { type: Boolean },
-    price_range: { type: Number },
-    aggregate_rating: { type: Number },
-    rating_color: { type: String },
-    rating_text: { type: String },
-    votes: { type: Number }
+    _id: mongoose.Schema.Types.ObjectId,
+    "Restaurant ID": { type: Number, required: true },  // Match exact field names
+    "Restaurant Name": { type: String, required: true },
+    "Country Code": { type: Number },
+    "City": { type: String },
+    "Address": { type: String },
+    "Locality": { type: String },
+    "Locality Verbose": { type: String },
+    "Longitude": { type: Number },
+    "Latitude": { type: Number },
+    "Cuisines": { type: String },
+    "Average Cost for two": { type: Number },
+    "Currency": { type: String },
+    "Has Table booking": { type: String }, // "Yes" or "No"
+    "Has Online delivery": { type: String },
+    "Is delivering now": { type: String },
+    "Switch to order menu": { type: String },
+    "Price range": { type: Number },
+    "Aggregate rating": { type: Number },
+    "Rating color": { type: String },
+    "Rating text": { type: String },
+    "Votes": { type: Number }
 }, { collection: "zomato" });
 
 const Restaurant = mongoose.model("Restaurant", restaurantSchema);
@@ -74,35 +63,35 @@ app.get('/', (req, res) => {
 app.get('/api/restaurants/:id', async (req, res) => {
     try {
         const restaurantId = parseInt(req.params.id);
+        console.log("🔍 Searching for Restaurant ID:", restaurantId);
 
         if (isNaN(restaurantId)) {
             return res.status(400).json({ error: "Invalid Restaurant ID" });
         }
 
-        const restaurant = await Restaurant.findOne({ restaurant_id: restaurantId });
+        const restaurant = await Restaurant.findOne({ "Restaurant ID": restaurantId });
 
         if (!restaurant) {
+            console.log("❌ Restaurant not found:", restaurantId);
             return res.status(404).json({ error: "Restaurant not found" });
         }
 
+        console.log("✅ Found Restaurant:", restaurant);
         res.json(restaurant);
     } catch (error) {
-        console.error("Error fetching restaurant:", error);
+        console.error("❌ Error fetching restaurant:", error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
 
-// 🔹 Get all restaurants with pagination (WITH MANUAL CORS HEADERS)
+// 🔹 Get all restaurants with pagination
 app.get('/api/restaurants', async (req, res) => {
     try {
-        // ✅ Manually set CORS headers for this specific route
-        res.setHeader('Access-Control-Allow-Origin', '*');
-
         const { skip = 0, limit = 20 } = req.query;
         const restaurants = await Restaurant.find()
             .skip(parseInt(skip))
             .limit(parseInt(limit));
-
+        
         res.json(restaurants);
     } catch (error) {
         res.status(500).json({ error: error.message });
