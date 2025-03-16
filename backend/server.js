@@ -10,7 +10,7 @@ const port = process.env.PORT || 3000;
 
 // ✅ Enable CORS (Allow requests from frontend)
 app.use(cors({
-    origin: 'https://zomato-main-axei9e8xw-priya-dwaras-projects.vercel.app', // Replace with your frontend URL
+    origin: 'https://zomato-main.vercel.app', // Replace with your frontend URL
     methods: 'GET, POST, PUT, DELETE, OPTIONS',
     allowedHeaders: 'Content-Type, Authorization'
 }));
