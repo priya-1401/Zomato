@@ -1,4 +1,4 @@
-const API_BASE_URL = 'hhttps://zomato-kmkrhjjj3-priya-dwaras-projects.vercel.app/api/restaurants';
+const API_BASE_URL = 'https://zomato-kmkrhjjj3-priya-dwaras-projects.vercel.app/api/restaurants';
 
 // Fetch and display the restaurant list
 async function loadRestaurants() {
