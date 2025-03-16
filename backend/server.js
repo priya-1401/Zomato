@@ -101,9 +101,7 @@ app.get('/api/restaurants/:id', async (req, res) => {
 app.get('/api/restaurants', async (req, res) => {
     try {
         // ✅ Manually set CORS headers for this specific route
-        res.setHeader('Access-Control-Allow-Origin', 'https://zomato-main.vercel.app');
-        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+        res.setHeader('Access-Control-Allow-Origin', '*');
 
         const { skip = 0, limit = 20 } = req.query;
         const restaurants = await Restaurant.find()
