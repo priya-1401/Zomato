@@ -13,10 +13,10 @@ app.use(cors({
     origin: '*' // ✅ Allow all origins
 }));
 
-// ✅ Middleware to manually set CORS headers (if needed)
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*'); // ✅ Allow all origins
-});
+
+// app.use((req, res, next) => {
+//     res.setHeader('Access-Control-Allow-Origin', '*'); // ✅ Allow all origins
+// });
 
 // ✅ Middleware
 app.use(express.json()); // Parse JSON requests
