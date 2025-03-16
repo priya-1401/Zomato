@@ -8,15 +8,20 @@ const cors = require('cors');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// ✅ Enable CORS (Allow requests from frontend)
+// ✅ Enable CORS globally
 app.use(cors({
     origin: 'https://zomato-main.vercel.app', // Replace with your frontend URL
     methods: 'GET, POST, PUT, DELETE, OPTIONS',
     allowedHeaders: 'Content-Type, Authorization'
 }));
+
+// ✅ Middleware
 app.use(express.json()); // Parse JSON requests
 
-// ✅ Serve Frontend Static Files
+// ✅ Handle CORS Preflight Requests
+app.options('*', cors());
+
+// ✅ Serve Frontend Static Files (If using Vercel)
 app.use(express.static(path.join(__dirname, '../frontend/public')));
 
 // ✅ MongoDB Connection
@@ -65,7 +70,7 @@ app.get('/', (req, res) => {
 // 🔹 Get a single restaurant by ID
 app.get('/api/restaurants/:id', async (req, res) => {
     try {
-        const restaurantId = parseInt(req.params.id); 
+        const restaurantId = parseInt(req.params.id);
 
         if (isNaN(restaurantId)) {
             return res.status(400).json({ error: "Invalid Restaurant ID" });
@@ -84,14 +89,19 @@ app.get('/api/restaurants/:id', async (req, res) => {
     }
 });
 
-// 🔹 Get all restaurants with pagination
+// 🔹 Get all restaurants with pagination (WITH MANUAL CORS HEADERS)
 app.get('/api/restaurants', async (req, res) => {
     try {
+        // ✅ Manually set CORS headers for this specific route
+        res.setHeader('Access-Control-Allow-Origin', 'https://zomato-main.vercel.app');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
         const { skip = 0, limit = 20 } = req.query;
         const restaurants = await Restaurant.find()
             .skip(parseInt(skip))
             .limit(parseInt(limit));
-        
+
         res.json(restaurants);
     } catch (error) {
         res.status(500).json({ error: error.message });
