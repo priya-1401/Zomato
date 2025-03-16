@@ -10,7 +10,7 @@ const port = process.env.PORT || 3000;
 
 // ✅ Enable CORS globally
 app.use(cors({
-    origin: '*', // ✅ Allow all origins
+    origin: '*' // ✅ Allow all origins
 }));
 
 // ✅ Middleware to manually set CORS headers (if needed)
